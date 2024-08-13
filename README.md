@@ -3,6 +3,7 @@
 ## Description
 
 This userscript automates the process of sending magnet links to Real-Debrid, checking for duplicates, and selecting specific file types (e.g., `.mp3`, `.m4b`, `.mp4`, `.mkv`, `.cbz`, `.cbr`) for download. It adds a "send" icon next to magnet links on web pages, allowing you to quickly and efficiently manage your torrent files with Real-Debrid. The original design was intended for TPB but it'll still add an RD icon wherever it finds a magnet link. 
+Note: The main reason we're selecting files is that rar'ed torrents (torrents with multiple filetypes are compressed by RD, when specific files are selected, it's not) are still not working well with rclone and zurg. Note that I have found zurg to be a lot more responsive than rclone_rd. 
 
 ## Features
 
