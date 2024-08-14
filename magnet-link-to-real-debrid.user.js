@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.3
 // @description  Automatically send magnet links to Real-Debrid, check for duplicates, and select specific file types
-// @author       You
+// @author       Pahiro
 // @match        *://*/*
 // @grant        none
 // ==/UserScript==
