@@ -6,6 +6,11 @@ This userscript automates the process of sending magnet links to Real-Debrid, ch
 
 Note: The main reason we're selecting files is that rar'ed torrents (torrents with multiple filetypes are compressed by RD, when specific files are selected, it's not) are still not working well with rclone and zurg. Note that I have found zurg to be a lot more responsive than rclone_rd. 
 
+<div align="center">
+	<img src="https://i.imgur.com/JI3P3t2.gif">
+</div>
+
+
 ## Features
 
 - **Automated Magnet Link Processing:** Automatically sends magnet links to Real-Debrid.
