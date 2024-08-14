@@ -111,7 +111,7 @@
 
                 showTemporaryMessage('Magnet link added and files selected in Real-Debrid!', 'green');
             } else {
-                showTemporaryMessage('No files matched the selected extensions.', 'yellow');
+                showTemporaryMessage('No files matched the selected extensions.', 'red');
             }
         } catch (error) {
             console.error('Error processing magnet link:', error);
