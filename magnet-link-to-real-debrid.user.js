@@ -100,12 +100,12 @@
                 });
 
                 showTemporaryMessage('Magnet link added and files selected in Real-Debrid!', 'green');
-                icon.style.filter = 'invert(18%) sepia(88%) saturate(7485%) hue-rotate(357deg) brightness(103%) contrast(105%)';
+              	icon.style.filter = 'invert(18%) sepia(88%) saturate(7485%) hue-rotate(357deg) brightness(103%) contrast(105%)';
             } else {
                 showTemporaryMessage('No files matched the selected extensions.', 'red');
             }
         } catch (error) {
-            console.error('Error processing magnet link:', error);
+          	console.log(error)
             showTemporaryMessage('Failed to send magnet link to Real-Debrid.', 'red');
         }
     }
