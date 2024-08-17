@@ -12,7 +12,7 @@
     'use strict';
 
     const apiKey = 'YOUR_REAL_DEBRID_API_KEY'; // Replace with your Real-Debrid API key
-  	const allowedExtensions = ['mp3', 'm4b', 'mp4', 'mkv', 'cbz', 'cbr'];
+    const allowedExtensions = ['mp3', 'm4b', 'mp4', 'mkv', 'cbz', 'cbr'];
 
     let existingTorrents = [];
 
