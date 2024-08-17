@@ -14,25 +14,7 @@
     const apiKey = 'YOUR_REAL_DEBRID_API_KEY'; // Replace with your Real-Debrid API key
   	const allowedExtensions = ['mp3', 'm4b', 'mp4', 'mkv', 'cbz', 'cbr'];
 
-    // Function to show a temporary message
-    function showTemporaryMessage(message, color) {
-        const msgDiv = document.createElement('div');
-        msgDiv.textContent = message;
-        msgDiv.style.position = 'fixed';
-        msgDiv.style.bottom = '20px';
-        msgDiv.style.left = '20px';
-        msgDiv.style.backgroundColor = color;
-        msgDiv.style.color = 'white';
-        msgDiv.style.padding = '10px';
-        msgDiv.style.borderRadius = '5px';
-        msgDiv.style.zIndex = 10000;
-        document.body.appendChild(msgDiv);
-
-        // Automatically remove the message after 3 seconds
-        setTimeout(() => {
-            msgDiv.remove();
-        }, 3000);
-    }
+    let existingTorrents = [];
 
     // Function to get the hash from a magnet link
     function getMagnetHash(magnetLink) {
@@ -41,21 +23,29 @@
         return hashParam ? hashParam.split(':').pop().toUpperCase() : null;
     }
 
-    // Function to check if the torrent already exists in Real-Debrid
-    async function checkIfTorrentExists(magnetHash) {
-        const response = await fetch('https://api.real-debrid.com/rest/1.0/torrents', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`
-            }
-        });
-        const torrents = await response.json();
+    // Function to fetch the list of existing torrents from Real-Debrid
+    async function fetchExistingTorrents() {
+        try {
+            const response = await fetch('https://api.real-debrid.com/rest/1.0/torrents', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`
+                }
+            });
+            existingTorrents = await response.json();
+            console.log('Fetched existing torrents:', existingTorrents); // Debugging statement
+        } catch (error) {
+            console.error('Error fetching torrents from Real-Debrid:', error);
+        }
+    }
 
-        return torrents.some(torrent => torrent.hash.toUpperCase() === magnetHash);
+    // Function to check if a torrent already exists in Real-Debrid
+    function isTorrentInList(magnetHash) {
+        return existingTorrents.some(torrent => torrent.hash.toUpperCase() === magnetHash);
     }
 
     // Function to send a magnet link to Real-Debrid and select specific file types
-    async function sendToRealDebrid(magnetLink) {
+    async function sendToRealDebrid(magnetLink, icon) {
         try {
             const magnetHash = getMagnetHash(magnetLink);
 
@@ -64,9 +54,9 @@
                 return;
             }
 
-            const exists = await checkIfTorrentExists(magnetHash);
-            if (exists) {
+            if (isTorrentInList(magnetHash)) {
                 showTemporaryMessage('Torrent already exists in Real-Debrid.', 'red');
+                icon.style.filter = 'hue-rotate(0deg)'; // Recolor icon to red
                 return;
             }
 
@@ -119,6 +109,26 @@
         }
     }
 
+    // Function to show a temporary message
+    function showTemporaryMessage(message, color) {
+        const msgDiv = document.createElement('div');
+        msgDiv.textContent = message;
+        msgDiv.style.position = 'fixed';
+        msgDiv.style.bottom = '20px';
+        msgDiv.style.left = '20px';
+        msgDiv.style.backgroundColor = color;
+        msgDiv.style.color = 'white';
+        msgDiv.style.padding = '10px';
+        msgDiv.style.borderRadius = '5px';
+        msgDiv.style.zIndex = 10000;
+        document.body.appendChild(msgDiv);
+
+        // Automatically remove the message after 3 seconds
+        setTimeout(() => {
+            msgDiv.remove();
+        }, 3000);
+    }
+
     // Function to create a send icon next to the magnet link
     function createSendIcon(link) {
         const icon = document.createElement('img');
@@ -127,12 +137,27 @@
         icon.style.marginLeft = '5px';
         icon.style.width = '16px';
         icon.style.height = '16px';
+
+        const magnetHash = getMagnetHash(link.href);
+        if (magnetHash && isTorrentInList(magnetHash)) {
+          	icon.style.filter = 'invert(18%) sepia(88%) saturate(7485%) hue-rotate(357deg) brightness(103%) contrast(105%)';
+            // icon.style.filter = 'hue-rotate(60deg)'; // Recolor icon to red if torrent exists
+            console.log("Recolored icon for duplicate torrent:", link.href); // Debug statement
+        }
+
         icon.addEventListener('click', () => {
-            sendToRealDebrid(link.href);
+            sendToRealDebrid(link.href, icon);
+            console.log("Icon clicked for:", link.href); // Debug statement
         });
+
         link.parentNode.insertBefore(icon, link.nextSibling);
     }
 
-    // Find all magnet links on the page and add send icons
-    document.querySelectorAll('a[href*="magnet:"]').forEach(createSendIcon);
+    // Main function to run on page load
+    async function main() {
+        await fetchExistingTorrents();
+        document.querySelectorAll('a[href*="magnet:"]').forEach(createSendIcon);
+    }
+
+    main(); // Call the main function
 })();
