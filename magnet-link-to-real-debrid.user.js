@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Magnet Link to Real-Debrid
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.5
 // @description  Automatically send magnet links to Real-Debrid, check for duplicates, and select specific file types
 // @author       Pahiro
 // @match        *://*/*
@@ -44,7 +44,6 @@
         return existingTorrents.some(torrent => torrent.hash.toUpperCase() === magnetHash);
     }
 
-    // Function to send a magnet link to Real-Debrid and select specific file types
     async function sendToRealDebrid(magnetLink, icon) {
         try {
             const magnetHash = getMagnetHash(magnetLink);
@@ -67,7 +66,9 @@
                     'Authorization': `Bearer ${apiKey}`,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({ 'magnet': magnetLink })
+                body: new URLSearchParams({
+                    'magnet': magnetLink
+                })
             });
             const addMagnetData = await addMagnetResponse.json();
             const torrentId = addMagnetData.id;
@@ -96,16 +97,18 @@
                         'Authorization': `Bearer ${apiKey}`,
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: new URLSearchParams({ 'files': selectedFiles })
+                    body: new URLSearchParams({
+                        'files': selectedFiles
+                    })
                 });
 
                 showTemporaryMessage('Magnet link added and files selected in Real-Debrid!', 'green');
-              	icon.style.filter = 'invert(18%) sepia(88%) saturate(7485%) hue-rotate(357deg) brightness(103%) contrast(105%)';
+                icon.style.filter = 'invert(18%) sepia(88%) saturate(7485%) hue-rotate(357deg) brightness(103%) contrast(105%)';
             } else {
                 showTemporaryMessage('No files matched the selected extensions.', 'red');
             }
         } catch (error) {
-          	console.log(error)
+            console.log(error)
             showTemporaryMessage('Failed to send magnet link to Real-Debrid.', 'red');
         }
     }
@@ -130,6 +133,7 @@
         }, 3000);
     }
 
+
     // Function to create a send icon next to the magnet link
     function createSendIcon(link) {
         const icon = document.createElement('img');
@@ -141,7 +145,7 @@
 
         const magnetHash = getMagnetHash(link.href);
         if (magnetHash && isTorrentInList(magnetHash)) {
-          	icon.style.filter = 'invert(18%) sepia(88%) saturate(7485%) hue-rotate(357deg) brightness(103%) contrast(105%)';
+            icon.style.filter = 'invert(18%) sepia(88%) saturate(7485%) hue-rotate(357deg) brightness(103%) contrast(105%)';
             // icon.style.filter = 'hue-rotate(60deg)'; // Recolor icon to red if torrent exists
             console.log("Recolored icon for duplicate torrent:", link.href); // Debug statement
         }
@@ -154,17 +158,16 @@
         link.parentNode.insertBefore(icon, link.nextSibling);
     }
 
-    // Main function to run on page load
     async function main() {
         const magnetLinks = document.querySelectorAll('a[href*="magnet:"]');
         if (magnetLinks.length > 0) {
-                await fetchExistingTorrents();
-                magnetLinks.forEach(createSendIcon);
-            } else {
-                console.log('No magnet links found on the page.');
-            }
+            await fetchExistingTorrents();
+            magnetLinks.forEach(createSendIcon);
+        } else {
+            console.log('No magnet links found on the page.');
         }
     }
 
-    main(); // Call the main function
+    main(); // Call the main function  
+
 })();
