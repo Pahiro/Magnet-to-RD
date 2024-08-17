@@ -156,8 +156,14 @@
 
     // Main function to run on page load
     async function main() {
-        await fetchExistingTorrents();
-        document.querySelectorAll('a[href*="magnet:"]').forEach(createSendIcon);
+        const magnetLinks = document.querySelectorAll('a[href*="magnet:"]');
+        if (magnetLinks.length > 0) {
+                await fetchExistingTorrents();
+                magnetLinks.forEach(createSendIcon);
+            } else {
+                console.log('No magnet links found on the page.');
+            }
+        }
     }
 
     main(); // Call the main function
